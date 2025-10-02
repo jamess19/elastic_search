@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "run",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/main.go",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "APP_ENV": "stg",
+                "DB_HOST": "localhost",
+                "DB_NAME": "myshop",
+                "DB_PASS": "1234",
+                "DB_PORT": "5433",
+                "DB_USER": "postgres",
+                "ENABLE_DB": "true",
+                "PORT": "3333",
+                "DEBUG":"true",
+            }
+        }
+    ]
+}

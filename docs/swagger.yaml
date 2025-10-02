@@ -1,0 +1,439 @@
+definitions:
+  model.Business:
+    properties:
+      address:
+        type: string
+      createAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      staffs:
+        items:
+          $ref: '#/definitions/model.Staff'
+        type: array
+      status:
+        type: string
+      type:
+        type: string
+      woker_name:
+        type: string
+    type: object
+  model.BusinessRequest:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+    type: object
+  model.Staff:
+    properties:
+      business_id:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  model.StaffRequest:
+    properties:
+      business_id:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    required:
+    - business_id
+    - email
+    - fullname
+    - password
+    - role
+    - username
+    type: object
+host: localhost:3333
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is Template api docs.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: template API
+  version: "1.0"
+paths:
+  /api/v1/business/create:
+    post:
+      consumes:
+      - application/json
+      description: create a new Business for system
+      operationId: CreateBusiness
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Business'
+      security:
+      - ApiKeyAuth: []
+      summary: Create new Business
+      tags:
+      - Business
+  /api/v1/business/create-v2:
+    post:
+      consumes:
+      - application/json
+      description: create new 10.000 businesses for system
+      operationId: CreateBusiness_v2
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Business'
+      security:
+      - ApiKeyAuth: []
+      summary: Create new 10.000 businesses
+      tags:
+      - Business
+  /api/v1/business/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific Business by ID
+      operationId: DeleteBusiness
+      parameters:
+      - description: Business ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a Business
+      tags:
+      - Business
+  /api/v1/business/get-list:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of Businesss
+      operationId: ListBusiness
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Business'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List Businesss
+      tags:
+      - Business
+  /api/v1/business/get-list-v2:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of Businesss
+      operationId: ListBusiness-v2
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Business'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List Businesss
+      tags:
+      - Business
+  /api/v1/business/get-one-v2/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific Business by ID  and staffs with preloading
+      operationId: GetOneBusiness_v2
+      parameters:
+      - description: Business ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Business'
+      security:
+      - ApiKeyAuth: []
+      summary: Get one Business
+      tags:
+      - Business
+  /api/v1/business/get-one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific Business by ID then get staff with id
+      operationId: GetOneBusiness
+      parameters:
+      - description: Business ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Business'
+      security:
+      - ApiKeyAuth: []
+      summary: Get one Business
+      tags:
+      - Business
+  /api/v1/business/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: update Business
+      operationId: UpdateBusiness
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Business'
+      security:
+      - ApiKeyAuth: []
+      summary: update Business
+      tags:
+      - Business
+  /api/v1/elastic/push-to-elastic:
+    post:
+      consumes:
+      - application/json
+      description: push business in postgre to elastic
+      operationId: PushToElastic
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Business'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: push business in postgre to elastic
+      tags:
+      - Elastic
+  /api/v1/staff/create:
+    post:
+      consumes:
+      - application/json
+      description: create a new staff for system
+      operationId: CreateStaff
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.StaffRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Staff'
+      security:
+      - ApiKeyAuth: []
+      summary: Create new staff
+      tags:
+      - Staff
+  /api/v1/staff/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific Staff by ID
+      operationId: DeleteStaff
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a Staff
+      tags:
+      - Staff
+  /api/v1/staff/get-list:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of Staffs
+      operationId: ListStaff
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Staff'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List Staffs
+      tags:
+      - Staff
+  /api/v1/staff/get-list-paging:
+    get:
+      operationId: ListStaffWithPaging
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      - description: Sort by column, e.g. 'staff.created_at desc'
+        in: query
+        name: sort
+        type: string
+      - description: search by name,...
+        in: query
+        name: keyword
+        type: string
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get List with paging
+      tags:
+      - Staff
+  /api/v1/staff/get-one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific Staff by ID
+      operationId: GetOneStaff
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Staff'
+      security:
+      - ApiKeyAuth: []
+      summary: Get one Staff
+      tags:
+      - Staff
+  /api/v1/staff/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: update Staff
+      operationId: UpdateStaff
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.StaffRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Staff'
+      security:
+      - ApiKeyAuth: []
+      summary: update Staff
+      tags:
+      - Staff
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
