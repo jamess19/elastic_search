@@ -297,6 +297,44 @@
                 }
             }
         },
+        "/api/v1/elastic/fulltext-search": {
+            "get": {
+                "description": "Perform multi-field full-text search with filters, pagination, and sort",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Elastic"
+                ],
+                "summary": "Full-text search documents",
+                "operationId": "FullTextSearch",
+                "parameters": [
+                    {
+                        "description": "Search request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/es.SearchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/es.SearchResult"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/elastic/push-to-elastic": {
             "post": {
                 "security": [
@@ -323,6 +361,44 @@
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/model.Business"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/elastic/search-by-field": {
+            "post": {
+                "description": "Search documents with multiple filters and pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Elastic"
+                ],
+                "summary": "Search businesses by filters",
+                "operationId": "SearchByField",
+                "parameters": [
+                    {
+                        "description": "Search request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/es.SearchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/es.SearchResult"
                             }
                         }
                     }
@@ -555,6 +631,82 @@
         }
     },
     "definitions": {
+        "es.SearchRequest": {
+            "type": "object",
+            "properties": {
+                "_source": {
+                    "description": "chọn field nào trả về (optional)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "filters": {
+                    "description": "các field cần filter",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Business"
+                        }
+                    ]
+                },
+                "index": {
+                    "description": "Tên index",
+                    "type": "string",
+                    "example": "business"
+                },
+                "page": {
+                    "description": "Số trang (bắt đầu từ 1)",
+                    "type": "integer",
+                    "example": 1
+                },
+                "size": {
+                    "description": "Số document mỗi trang",
+                    "type": "integer",
+                    "example": 10
+                },
+                "sort": {
+                    "description": "key=field, value=\"asc|desc\"",
+                    "type": "string",
+                    "example": "{\"created_at\":\"desc\"}"
+                }
+            }
+        },
+        "es.SearchResult": {
+            "type": "object",
+            "properties": {
+                "hits": {
+                    "type": "object",
+                    "properties": {
+                        "hits": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "_id": {
+                                        "type": "string"
+                                    },
+                                    "_score": {
+                                        "type": "number"
+                                    },
+                                    "_source": {
+                                        "type": "object",
+                                        "additionalProperties": true
+                                    }
+                                }
+                            }
+                        },
+                        "total": {
+                            "type": "object",
+                            "properties": {
+                                "value": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "model.Business": {
             "type": "object",
             "properties": {

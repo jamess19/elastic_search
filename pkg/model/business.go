@@ -13,7 +13,7 @@ type Business struct {
 	Address     string    `json:"address"`
 	BusinessType        string    `json:"type"`
 	Status      string    `json:"status"`
-	CreateAt    time.Time `gorm:"column:created_at;default:CURRENT_TIMESTAMP"`
+	CreateAt    time.Time `gorm:"column:created_at"`
 	Staffs []Staff `gorm:"foreignKey:BusinessID"`
 	WorkerName string `json:"woker_name"`
 }

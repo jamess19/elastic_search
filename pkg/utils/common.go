@@ -106,7 +106,7 @@ func ValidPhoneFormat(phone string) bool {
 	if len(phone) == 13 {
 		return true
 	}
-	internationalPhone := regexp.MustCompile("^\\+[1-9]\\d{1,14}$")
+	internationalPhone := regexp.MustCompile(`^\+[1-9]\d{1,14}$`)
 	vietnamPhone := regexp.MustCompile(`((09|03|07|08|05)+([0-9]{8})\b)`)
 	if !vietnamPhone.MatchString(phone) {
 		if !internationalPhone.MatchString(phone) {
@@ -162,7 +162,7 @@ func CheckRequireValid(ob interface{}) error {
 		for _, e := range validator.Errors {
 			err += fmt.Sprintf("[%s: %s] ", e.Field, e.Message)
 		}
-		return fmt.Errorf(err)
+		return fmt.Errorf("%s", err)
 	}
 	return nil
 }

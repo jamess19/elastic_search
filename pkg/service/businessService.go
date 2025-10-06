@@ -90,7 +90,7 @@ func (s *BusinessService) CreateBusiness_v2(ctx context.Context) ([]model.Busine
 		<-done
 	}
 	duration := time.Now().UnixMilli() - start
-	log.Info("Execution time: %d ms", duration)
+	log.Infof("Execution time: %d ms", duration)
 	return BusinessList, nil
 }
 
@@ -184,6 +184,10 @@ func (s *BusinessService) GetOneBusiness(ctx context.Context, BusinessID uuid.UU
 	}
 
 	res, err := s.repo.GetStaffByBusinessID(ctx, Business.ID, nil)
+	if err != nil {
+		log.WithError(err).WithField("BusinessID", Business.ID).Error("Error when getting staff by business ID")
+		return nil, ginext.NewError(http.StatusInternalServerError, utils.MessageError()[http.StatusInternalServerError])
+	}
 	Business.Staffs = res.Data
 
 	return Business, nil

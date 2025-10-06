@@ -5,8 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/elastic/go-elasticsearch/v8/esapi"
+	"gitlab.com/goxp/cloud0/logger"
 )
 
 // Ping checks connection to ElasticSearch
@@ -26,6 +26,7 @@ func (c *esClient) Ping(ctx context.Context) error {
 
 // CreateIndex creates a new index with mapping
 func (c *esClient) CreateIndex(ctx context.Context, indexName string, mapping interface{}) error {
+	log := logger.WithCtx(ctx, "EsService.CreateIndex")
 	var body []byte
 	var err error
 
@@ -42,11 +43,17 @@ func (c *esClient) CreateIndex(ctx context.Context, indexName string, mapping in
 		c.client.Indices.Create.WithBody(bytes.NewReader(body)),
 	)
 	if err != nil {
+		log.WithError(err).Error("failed to create")
 		return fmt.Errorf("failed to create index: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
+		// If index already exists, it's not an error we should panic on
+		if res.StatusCode == 400 {
+			log.Warnf("Index %s may already exist or mapping conflict", indexName)
+			return nil
+		}
 		return fmt.Errorf("create index error: %s", res.String())
 	}
 
@@ -107,89 +114,6 @@ func (c *esClient) IndexDocument(ctx context.Context, indexName, docID string, d
 
 	if res.IsError() {
 		return fmt.Errorf("index document error: %s", res.String())
-	}
-
-	return nil
-}
-
-// GetDocument retrieves a document by ID
-func (c *esClient) GetDocument(ctx context.Context, indexName, docID string, result interface{}) error {
-	res, err := c.client.Get(
-		indexName,
-		docID,
-		c.client.Get.WithContext(ctx),
-	)
-	if err != nil {
-		return fmt.Errorf("failed to get document: %w", err)
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		return fmt.Errorf("get document error: %s", res.String())
-	}
-
-	var response struct {
-		Source json.RawMessage `json:"_source"`
-	}
-
-	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
-		return fmt.Errorf("failed to decode response: %w", err)
-	}
-
-	if err := json.Unmarshal(response.Source, result); err != nil {
-		return fmt.Errorf("failed to unmarshal source: %w", err)
-	}
-
-	return nil
-}
-
-// UpdateDocument updates a document
-func (c *esClient) UpdateDocument(ctx context.Context, indexName, docID string, doc interface{}) error {
-	update := map[string]interface{}{
-		"doc": doc,
-	}
-
-	data, err := json.Marshal(update)
-	if err != nil {
-		return fmt.Errorf("failed to marshal update: %w", err)
-	}
-
-	req := esapi.UpdateRequest{
-		Index:      indexName,
-		DocumentID: docID,
-		Body:       bytes.NewReader(data),
-		Refresh:    "true",
-	}
-
-	res, err := req.Do(ctx, c.client)
-	if err != nil {
-		return fmt.Errorf("failed to update document: %w", err)
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		return fmt.Errorf("update document error: %s", res.String())
-	}
-
-	return nil
-}
-
-// DeleteDocument deletes a document
-func (c *esClient) DeleteDocument(ctx context.Context, indexName, docID string) error {
-	req := esapi.DeleteRequest{
-		Index:      indexName,
-		DocumentID: docID,
-		Refresh:    "true",
-	}
-
-	res, err := req.Do(ctx, c.client)
-	if err != nil {
-		return fmt.Errorf("failed to delete document: %w", err)
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		return fmt.Errorf("delete document error: %s", res.String())
 	}
 
 	return nil

@@ -45,7 +45,7 @@ func (s *StaffService) CreateStaff(ctx context.Context, req model.StaffRequest) 
 
 func (s *StaffService) 	UpdateStaff(ctx context.Context, req model.StaffRequest) (*model.Staff, error) {
 	log := logger.WithCtx(ctx, "BusinessService.UpdateBusiness")
-	Staff ,err := s.repo.GetOneStaff(ctx, *&req.ID, nil)
+	Staff ,err := s.repo.GetOneStaff(ctx, req.ID, nil)
 	
 	if err != nil {
 		log.WithError(err).WithField("req", req).Error("Error get Staff for updating")

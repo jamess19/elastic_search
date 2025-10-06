@@ -1,0 +1,7 @@
+cp .env
+
+mkdir data/
+sudo chmod a+rw data/
+
+docker-compose build
+docker-compose up

@@ -87,6 +87,8 @@ func NewService() *Service {
 	v1Api.GET("/staff/get-list-paging", ginext.WrapHandler(staffHandle.ListStaffWithPaging))
 
 	v1Api.POST("/elastic/push-to-elastic", ginext.WrapHandler(esHandle.PushToElastic))
+	v1Api.POST("/elastic/search-by-field", ginext.WrapHandler(esHandle.SearchByField))
+	v1Api.POST("/elastic/fulltext-search", ginext.WrapHandler(esHandle.FullTextSearch))
 
 	
 	// Migrate

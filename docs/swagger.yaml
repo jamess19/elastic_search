@@ -1,4 +1,55 @@
 definitions:
+  es.SearchRequest:
+    properties:
+      _source:
+        description: chọn field nào trả về (optional)
+        items:
+          type: string
+        type: array
+      filters:
+        allOf:
+        - $ref: '#/definitions/model.Business'
+        description: các field cần filter
+      index:
+        description: Tên index
+        example: business
+        type: string
+      page:
+        description: Số trang (bắt đầu từ 1)
+        example: 1
+        type: integer
+      size:
+        description: Số document mỗi trang
+        example: 10
+        type: integer
+      sort:
+        description: key=field, value="asc|desc"
+        example: '{"created_at":"desc"}'
+        type: string
+    type: object
+  es.SearchResult:
+    properties:
+      hits:
+        properties:
+          hits:
+            items:
+              properties:
+                _id:
+                  type: string
+                _score:
+                  type: number
+                _source:
+                  additionalProperties: true
+                  type: object
+              type: object
+            type: array
+          total:
+            properties:
+              value:
+                type: integer
+            type: object
+        type: object
+    type: object
   model.Business:
     properties:
       address:
@@ -269,6 +320,32 @@ paths:
       summary: update Business
       tags:
       - Business
+  /api/v1/elastic/fulltext-search:
+    get:
+      consumes:
+      - application/json
+      description: Perform multi-field full-text search with filters, pagination,
+        and sort
+      operationId: FullTextSearch
+      parameters:
+      - description: Search request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/es.SearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/es.SearchResult'
+            type: array
+      summary: Full-text search documents
+      tags:
+      - Elastic
   /api/v1/elastic/push-to-elastic:
     post:
       consumes:
@@ -287,6 +364,31 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: push business in postgre to elastic
+      tags:
+      - Elastic
+  /api/v1/elastic/search-by-field:
+    post:
+      consumes:
+      - application/json
+      description: Search documents with multiple filters and pagination
+      operationId: SearchByField
+      parameters:
+      - description: Search request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/es.SearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/es.SearchResult'
+            type: array
+      summary: Search businesses by filters
       tags:
       - Elastic
   /api/v1/staff/create:
